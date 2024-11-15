@@ -1,0 +1,9 @@
+- type: entity
+  name: Book of Mimery
+  parent: BaseItem
+  id: MimeryBook
+  description: i hope this works
+  components:
+  - type: Sprite
+    sprite: Goobstation/Objects/Misc/mimery.rsi
+    state: book_icon
