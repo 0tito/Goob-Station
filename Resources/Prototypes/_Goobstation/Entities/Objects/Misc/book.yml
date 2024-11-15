@@ -5,5 +5,5 @@
   description: i hope this works
   components:
   - type: Sprite
-    sprite: Goobstation/Objects/Misc/mimery.rsi
+    sprite: _Goobstation/Objects/Misc/mimery.rsi
     state: book_icon
