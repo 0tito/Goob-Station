@@ -7,3 +7,5 @@
   - type: Sprite
     sprite: _Goobstation/Objects/Misc/mimery.rsi
     state: book_icon
+  - type: PlaySoundOnUse
+    sound: /Audio/Items/bikehorn.ogg
