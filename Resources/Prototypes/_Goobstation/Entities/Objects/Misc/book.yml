@@ -7,5 +7,11 @@
   - type: Sprite
     sprite: _Goobstation/Objects/Misc/mimery.rsi
     state: book_icon
+  - type: UseDelay
+    delay: 1
   - type: PlaySoundOnUse
     sound: /Audio/Items/bikehorn.ogg
+  - type: Spellbook
+    learnPermanently: True
+    spellActions:
+      ActionMimeryWall: -1

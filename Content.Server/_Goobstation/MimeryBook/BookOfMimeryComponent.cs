@@ -1,14 +1,9 @@
-﻿using Robust.Shared.Prototypes;
+using Robust.Shared.Prototypes;
 
-namespace Content.Shared.Magic.Components;
+namespace Content.Server._Goobstation.MimeryBook;
 
-/// <summary>
-/// Spellbooks can grant one or more spells to the user. If marked as <see cref="LearnPermanently"/> it will teach
-/// the performer the spells and wipe the book.
-/// Default behavior requires the book to be held in hand
-/// </summary>
-[RegisterComponent, Access(typeof(SpellbookSystem))]
-public sealed partial class SpellbookComponent : Component
+[RegisterComponent]
+public sealed partial class BookOfMimeryComponent : Component
 {
     /// <summary>
     /// List of spells that this book has. This is a combination of the WorldSpells, EntitySpells, and InstantSpells.
@@ -32,5 +27,5 @@ public sealed partial class SpellbookComponent : Component
     /// </summary>
     [DataField]
     [ViewVariables(VVAccess.ReadWrite)]
-    public bool LearnPermanently = false;
+    public bool LearnPermanently;
 }
