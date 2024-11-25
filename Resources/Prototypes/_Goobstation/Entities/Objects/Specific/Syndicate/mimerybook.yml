@@ -20,40 +20,24 @@
 - type: entity
   name: Finger Gun
   parent: [BaseWeaponBatterySmall, BaseCommandContraband] # Frontier: added BaseC2ContrabandUnredeemable. Goobstation: removed BaseC2ContrabandUnredeemable, added BaseCommandContraband
-  id: FinguerGun
+  id: FingerGun
   description: The peak of the Mime powers, only achieved by a secret method.
   components:
   - type: Sprite
     sprite: _Goobstation/Objects/Misc/mimery.rsi
     state: finger_gun
-  - type: Clothing
-    quickEquip: false # Frontier
-    slots: # Frontier
-    # - Back # Frontier
-    - suitStorage #Frontier
-    sprite: DeltaV/Objects/Weapons/Guns/Battery/multiphase_energygun.rsi
   - type: Gun
-    soundGunshot:
-      path: /Audio/DeltaV/Weapons/Guns/Empty/dry_fire.ogg
-    soundEmpty:
-      path: /Audio/DeltaV/Weapons/Guns/Empty/dry_fire.ogg
   - type: Battery
-    maxCharge: 2000
-    startingCharge: 2000
+    maxCharge: 500
+    startingCharge: 500
   - type: ProjectileBatteryAmmoProvider
     proto: BulletFingerGun
     fireCost: 100
-  - type: EnergyGun
-    fireModes:
-    - proto: BulletFingerGun
-      fireCost: 100
-      name: disabling
-      state: Finger
-    zeroVisible: true
   - type: Appearance
   - type: Tag
     tags:
     - HighRiskItem
     - Sidearm
-  - type: StaticPrice
-    price: 750
+  - type: BatterySelfRecharger
+    autoRecharge: true
+    autoRechargeRate: 25 #1 shot every 4 seconds, making it easy to punish in case shots are missed

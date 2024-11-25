@@ -13,6 +13,5 @@ public enum EnergyGunFireModeState : byte
 {
     Disabler,
     Lethal,
-    Special,
-    Finger
+    Special
 }
