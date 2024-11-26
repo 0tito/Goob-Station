@@ -134,6 +134,7 @@
     layers:
     - state: heavylaser
       shader: unshaded
+      color: white
   - type: Ammo
   - type: Physics
   - type: Fixtures

@@ -11,7 +11,7 @@
     delay: 1
   - type: PlaySoundOnUse
     sound: /Audio/Items/bikehorn.ogg
-  - type: Spellbook
+  - type: BookOfMimery
     learnPermanently: True
     spellActions:
       ActionMimeryWall: -1
@@ -27,6 +27,8 @@
     sprite: _Goobstation/Objects/Misc/mimery.rsi
     state: finger_gun
   - type: Gun
+    soundGunshot: null
+    soundEmpty: null
   - type: Battery
     maxCharge: 500
     startingCharge: 500
