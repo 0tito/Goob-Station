@@ -1,3 +1,4 @@
+using Content.Server.Administration.Systems;
 using Content.Server.DoAfter;
 using Content.Server.Forensics;
 using Content.Server.Polymorph.Systems;
@@ -56,6 +57,9 @@ using Content.Server.Stunnable;
 using Content.Shared.Jittering;
 using Content.Server.Explosion.EntitySystems;
 using System.Linq;
+using Content.Shared.Heretic;
+using Content.Shared._Goobstation.Actions;
+using Content.Shared.Body.Components;
 
 namespace Content.Server.Changeling;
 
@@ -101,6 +105,8 @@ public sealed partial class ChangelingSystem : EntitySystem
     [Dependency] private readonly SharedJitteringSystem _jitter = default!;
     [Dependency] private readonly ExplosionSystem _explosionSystem = default!;
     [Dependency] private readonly BodySystem _bodySystem = default!;
+    [Dependency] private readonly IComponentFactory _compFactory = default!;
+    [Dependency] private readonly RejuvenateSystem _rejuv = default!;
 
     public EntProtoId ArmbladePrototype = "ArmBladeChangeling";
     public EntProtoId FakeArmbladePrototype = "FakeArmBladeChangeling";
@@ -328,15 +334,12 @@ public sealed partial class ChangelingSystem : EntitySystem
     }
     public bool TrySting(EntityUid uid, ChangelingComponent comp, EntityTargetActionEvent action, bool overrideMessage = false)
     {
-        if (!TryUseAbility(uid, comp, action))
-            return false;
-
         var target = action.Target;
 
         // can't get his dna if he doesn't have it!
         if (!HasComp<AbsorbableComponent>(target) || HasComp<AbsorbedComponent>(target))
         {
-            _popup.PopupEntity(Loc.GetString("changeling-sting-extract-fail"), uid, uid);
+            _popup.PopupEntity(Loc.GetString("changeling-sting-fail"), uid, uid);
             return false;
         }
 
@@ -346,6 +349,10 @@ public sealed partial class ChangelingSystem : EntitySystem
             _popup.PopupEntity(Loc.GetString("changeling-sting-fail-ling"), target, target);
             return false;
         }
+
+        if (!TryUseAbility(uid, comp, action))
+            return false;
+
         if (!overrideMessage)
             _popup.PopupEntity(Loc.GetString("changeling-sting", ("target", Identity.Entity(target, EntityManager))), uid, uid);
         return true;
@@ -551,23 +558,41 @@ public sealed partial class ChangelingSystem : EntitySystem
             if (!persistentDna && data != null)
                 newLingComp?.AbsorbedDNA.Remove(data);
             RemCompDeferred<ChangelingComponent>(uid);
-
-            if (TryComp<StoreComponent>(uid, out var storeComp))
-            {
-                var storeCompCopy = _serialization.CreateCopy(storeComp, notNullableOverride: true);
-                RemComp<StoreComponent>(newUid.Value);
-                EntityManager.AddComponent(newUid.Value, storeCompCopy);
-            }
         }
+
+        //    if (TryComp<StoreComponent>(uid, out var storeComp))
+        //    {
+        //        var storeCompCopy = _serialization.CreateCopy(storeComp, notNullableOverride: true);
+        //        RemComp<StoreComponent>(newUid.Value);
+        //        EntityManager.AddComponent(newUid.Value, storeCompCopy);
+        //    }
+        //}
 
         // exceptional comps check
         // there's no foreach for types i believe so i gotta thug it out yandev style.
-        if (HasComp<HeadRevolutionaryComponent>(uid))
-            EnsureComp<HeadRevolutionaryComponent>(newEnt);
-        if (HasComp<RevolutionaryComponent>(uid))
-            EnsureComp<RevolutionaryComponent>(newEnt);
+        List<Type> types = new()
+        {
+            typeof(HeadRevolutionaryComponent),
+            typeof(RevolutionaryComponent),
+            typeof(GhoulComponent),
+            typeof(HereticComponent),
+            typeof(StoreComponent),
+            // ADD MORE TYPES HERE
+        };
+        foreach (var type in types)
+        {
+            if (EntityManager.TryGetComponent(uid, type, out var icomp))
+            {
+                var newComp = (Component) _compFactory.GetComponent(_compFactory.GetComponentName(type));
+                var temp = (object) newComp;
+                _serialization.CopyTo(icomp, ref temp, notNullableOverride: true);
+                EntityManager.AddComponent(newEnt, (Component) temp!);
+            }
+        }
 
-        QueueDel(uid);
+        RaiseNetworkEvent(new LoadActionsEvent(GetNetEntity(uid)), newEnt);
+
+        Timer.Spawn(300, () => { QueueDel(uid); });
 
         return newUid;
     }
@@ -648,6 +673,13 @@ public sealed partial class ChangelingSystem : EntitySystem
         UpdateBiomass(uid, comp, 0);
         // make their blood unreal
         _blood.ChangeBloodReagent(uid, "BloodChangeling");
+
+        // Shitmed: Prevent changelings from getting their body parts severed
+        foreach (var (id, part) in _bodySystem.GetBodyChildren(uid))
+        {
+            part.CanSever = false;
+            Dirty(id, part);
+        }
     }
 
     private void OnMobStateChange(EntityUid uid, ChangelingComponent comp, ref MobStateChangedEvent args)

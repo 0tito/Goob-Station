@@ -40,6 +40,7 @@ public abstract class SharedStunSystem : EntitySystem
     [Dependency] private readonly SharedContainerSystem _container = default!; // WD EDIT
     [Dependency] private readonly SharedStutteringSystem _stutter = default!; // goob edit
     [Dependency] private readonly SharedJitteringSystem _jitter = default!; // goob edit
+    [Dependency] private readonly ClothingModifyStunTimeSystem _modify = default!; // goob edit
 
     /// <summary>
     /// Friction modifier for knocked down players.
@@ -144,7 +145,8 @@ public abstract class SharedStunSystem : EntitySystem
 
     private void OnKnockInit(EntityUid uid, KnockedDownComponent component, ComponentInit args)
     {
-        RaiseNetworkEvent(new CheckAutoGetUpEvent(GetNetEntity(uid))); // WD EDIT
+        _layingDown.UpdateSpriteRotation(uid); // Goobstation
+        RaiseLocalEvent(uid, new CheckAutoGetUpEvent()); // WD EDIT
         _layingDown.TryLieDown(uid, null, null, DropHeldItemsBehavior.DropIfStanding); // WD EDIT
     }
 
@@ -196,6 +198,8 @@ public abstract class SharedStunSystem : EntitySystem
     public bool TryStun(EntityUid uid, TimeSpan time, bool refresh,
         StatusEffectsComponent? status = null)
     {
+        time *= _modify.GetModifier(uid); // Goobstation
+
         if (time <= TimeSpan.Zero)
             return false;
 
@@ -223,6 +227,8 @@ public abstract class SharedStunSystem : EntitySystem
     public bool TryKnockdown(EntityUid uid, TimeSpan time, bool refresh,
         StatusEffectsComponent? status = null)
     {
+        time *= _modify.GetModifier(uid); // Goobstation
+
         if (time <= TimeSpan.Zero)
             return false;
 
@@ -247,7 +253,14 @@ public abstract class SharedStunSystem : EntitySystem
         if (!Resolve(uid, ref status, false))
             return false;
 
-        return TryKnockdown(uid, time, refresh, status) && TryStun(uid, time, refresh, status);
+        // Goob edit start
+        var knocked = TryKnockdown(uid, time, refresh, status);
+        var stunned = TryStun(uid, time, refresh, status);
+        if (knocked || stunned)
+            RaiseLocalEvent(uid, new DropHandItemsEvent());
+
+        return knocked && stunned;
+        // Goob edit end
     }
 
     /// <summary>

@@ -5,6 +5,7 @@ using Content.Shared.Camera;
 using Content.Shared.Damage;
 using Content.Shared.Database;
 using Content.Shared.Projectiles;
+using Content.Shared.Weapons.Ranged.Components;
 using Robust.Shared.Physics.Events;
 using Robust.Shared.Player;
 
@@ -38,6 +39,8 @@ public sealed class ProjectileSystem : SharedProjectileSystem
         if (attemptEv.Cancelled)
         {
             SetShooter(uid, component, target);
+            _guns.SetTarget(uid, null); // Goobstation
+            component.IgnoredEntities.Clear(); // Goobstation
             return;
         }
 
@@ -67,7 +70,12 @@ public sealed class ProjectileSystem : SharedProjectileSystem
             _sharedCameraRecoil.KickCamera(target, direction);
         }
 
-        component.DamagedEntity = true;
+        // Goobstation start
+        if (component.Penetrate)
+            component.IgnoredEntities.Add(target);
+        else
+            component.DamagedEntity = true;
+        // Goobstation end
 
         if (component.DeleteOnCollide)
             QueueDel(uid);

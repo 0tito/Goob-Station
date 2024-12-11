@@ -134,7 +134,7 @@ public sealed partial class GunSystem : SharedGunSystem
 
                         RaiseLocalEvent(ent!.Value, new AmmoShotEvent()
                         {
-                            FiredProjectiles = shotProjectiles,
+                            FiredProjectiles = shotProjectiles
                         });
 
                         SetCartridgeSpent(ent.Value, cartridge, true);
@@ -304,6 +304,13 @@ public sealed partial class GunSystem : SharedGunSystem
             MuzzleFlash(gunUid, ammoComp, mapDirection.ToAngle(), user);
             Audio.PlayPredicted(gun.SoundGunshotModified, gunUid, user);
         }
+    }
+
+    public void SetTarget(EntityUid projectile, EntityUid? target) // Goobstation
+    {
+        var targeted = EnsureComp<TargetedProjectileComponent>(projectile);
+        targeted.Target = target;
+        Dirty(projectile, targeted);
     }
 
     private void ShootOrThrow(EntityUid uid, Vector2 mapDirection, Vector2 gunVelocity, GunComponent gun, EntityUid gunUid, EntityUid? user)

@@ -15,10 +15,16 @@
       time: 36000 #10 hrs
     - !type:OverallPlaytimeRequirement
       time: 144000 #40 hrs
+    - !type:AgeRequirement
+      requiredAge: 21
+    # Goobstation - Siouxcide, prevent felinids from playing command
+    - !type:SpeciesRequirement
+      inverted: true
+      species:
+      - Felinid
   weight: 10
   startingGear: CMOGear
   icon: "JobIconChiefMedicalOfficer"
-  requireAdminNotify: true
   supervisors: job-supervisors-captain
   canBeAntag: false
   access:
@@ -36,13 +42,18 @@
   - !type:AddComponentSpecial
     components:
       - type: CommandStaff
+  # Shitmed Change
+  - !type:AddComponentSpecial
+    components:
+    - type: SurgerySpeedModifier
+      SpeedModifier: 2.5
 
 - type: startingGear
   id: CMOGear
   equipment:
     id: CMOPDA
-    ears: ClothingHeadsetCMO
-    belt: ClothingBeltMedicalFilled
+    ears: ClothingHeadsetAltMedical # Goobstation
+    belt: ClothingBeltMilitaryWebbingCMOFilled # Goobstation
   storage:
     back:
     - Flash

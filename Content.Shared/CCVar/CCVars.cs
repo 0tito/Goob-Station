@@ -32,6 +32,21 @@ namespace Content.Shared.CCVar
         public static readonly CVarDef<string> DefaultGuide =
             CVarDef.Create("server.default_guide", "NewPlayer", CVar.REPLICATED | CVar.SERVER);
 
+        /// <summary>
+        /// If greater than 0, automatically restart the server after this many minutes of uptime.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This is intended to work around various bugs and performance issues caused by long continuous server uptime.
+        /// </para>
+        /// <para>
+        /// This uses the same non-disruptive logic as update restarts,
+        /// i.e. the game will only restart at round end or when there is nobody connected.
+        /// </para>
+        /// </remarks>
+        public static readonly CVarDef<int> ServerUptimeRestartMinutes =
+            CVarDef.Create("server.uptime_restart_minutes", 0, CVar.SERVERONLY);
+
         /*
          * Ambience
          */
@@ -437,15 +452,26 @@ namespace Content.Shared.CCVar
             CVarDef.Create("game.entity_menu_lookup", 0.25f, CVar.CLIENTONLY | CVar.ARCHIVE);
 
         /// <summary>
-        ///     Goobstation - indicates how much players are required for the round to be considered lowpop.
-        ///     Used for dynamic gamemode.
+        /// Should the clients window show the server hostname in the title?
         /// </summary>
-        public static readonly CVarDef<float> LowpopThreshold =
-            CVarDef.Create("game.players.lowpop_threshold", 20f, CVar.SERVERONLY);
+        public static readonly CVarDef<bool> GameHostnameInTitlebar =
+            CVarDef.Create("game.hostname_in_titlebar", true, CVar.SERVER | CVar.REPLICATED);
 
         /*
          * Discord
          */
+
+        /// <summary>
+        /// The role that will get mentioned if a new SOS ahelp comes in.
+        /// </summary>
+        public static readonly CVarDef<string> DiscordAhelpMention =
+        CVarDef.Create("discord.on_call_ping", string.Empty, CVar.SERVERONLY | CVar.CONFIDENTIAL);
+
+        /// <summary>
+        /// URL of the discord webhook to relay unanswered ahelp messages.
+        /// </summary>
+        public static readonly CVarDef<string> DiscordOnCallWebhook =
+            CVarDef.Create("discord.on_call_webhook", string.Empty, CVar.SERVERONLY | CVar.CONFIDENTIAL);
 
         /// <summary>
         /// URL of the Discord webhook which will relay all ahelp messages.
@@ -908,7 +934,7 @@ namespace Content.Shared.CCVar
         /// <seealso cref="AhelpAdminPrefix"/>
         /// <seealso cref="AhelpAdminPrefixWebhook"/>
         public static readonly CVarDef<bool> AdminUseCustomNamesAdminRank =
-            CVarDef.Create("admin.use_custom_names_admin_rank", true, CVar.SERVERONLY);
+            CVarDef.Create("admin.use_custom_names_admin_rank", false, CVar.SERVERONLY);
 
         /*
          * AHELP
@@ -936,7 +962,7 @@ namespace Content.Shared.CCVar
         /// <seealso cref="AdminUseCustomNamesAdminRank"/>
         /// <seealso cref="AhelpAdminPrefixWebhook"/>
         public static readonly CVarDef<bool> AhelpAdminPrefix =
-            CVarDef.Create("ahelp.admin_prefix", false, CVar.SERVERONLY);
+            CVarDef.Create("ahelp.admin_prefix", true, CVar.SERVERONLY);
 
         /// <summary>
         /// Should the administrator's position be displayed in the webhook.
@@ -945,7 +971,7 @@ namespace Content.Shared.CCVar
         /// <seealso cref="AdminUseCustomNamesAdminRank"/>
         /// <seealso cref="AhelpAdminPrefix"/>
         public static readonly CVarDef<bool> AhelpAdminPrefixWebhook =
-            CVarDef.Create("ahelp.admin_prefix_webhook", false, CVar.SERVERONLY);
+            CVarDef.Create("ahelp.admin_prefix_webhook", true, CVar.SERVERONLY);
 
         /*
          * Explosions
@@ -1508,13 +1534,25 @@ namespace Content.Shared.CCVar
         ///     Config for when the votekick should be allowed to be called based on number of eligible voters.
         /// </summary>
         public static readonly CVarDef<int> VotekickEligibleNumberRequirement =
-            CVarDef.Create("votekick.eligible_number", 10, CVar.SERVERONLY);
+            CVarDef.Create("votekick.eligible_number", 5, CVar.SERVERONLY);
 
         /// <summary>
         ///     Whether a votekick initiator must be a ghost or not.
         /// </summary>
         public static readonly CVarDef<bool> VotekickInitiatorGhostRequirement =
             CVarDef.Create("votekick.initiator_ghost_requirement", true, CVar.SERVERONLY);
+
+        /// <summary>
+        ///     Should the initiator be whitelisted to initiate a votekick?
+        /// </summary>
+        public static readonly CVarDef<bool> VotekickInitiatorWhitelistedRequirement =
+            CVarDef.Create("votekick.initiator_whitelist_requirement", true, CVar.SERVERONLY);
+
+        /// <summary>
+        ///     Should the initiator be able to start a votekick if they are bellow the votekick.voter_playtime requirement?
+        /// </summary>
+        public static readonly CVarDef<bool> VotekickInitiatorTimeRequirement =
+            CVarDef.Create("votekick.initiator_time_requirement", false, CVar.SERVERONLY);
 
         /// <summary>
         ///     Whether a votekick voter must be a ghost or not.
@@ -1532,7 +1570,7 @@ namespace Content.Shared.CCVar
         ///     Config for how many seconds a player must have been dead to initiate a votekick / be able to vote on a votekick.
         /// </summary>
         public static readonly CVarDef<int> VotekickEligibleVoterDeathtime =
-            CVarDef.Create("votekick.voter_deathtime", 180, CVar.REPLICATED | CVar.SERVER);
+            CVarDef.Create("votekick.voter_deathtime", 30, CVar.REPLICATED | CVar.SERVER);
 
         /// <summary>
         ///     The required ratio of eligible voters that must agree for a votekick to go through.
@@ -1575,6 +1613,12 @@ namespace Content.Shared.CCVar
         /// </summary>
         public static readonly CVarDef<int> VotekickBanDuration =
             CVarDef.Create("votekick.ban_duration", 180, CVar.SERVERONLY);
+
+        /// <summary>
+        ///     Whether the ghost requirement settings for votekicks should be ignored for the lobby.
+        /// </summary>
+        public static readonly CVarDef<bool> VotekickIgnoreGhostReqInLobby =
+            CVarDef.Create("votekick.ignore_ghost_req_in_lobby", true, CVar.SERVERONLY);
 
         /*
          * BAN
@@ -2399,5 +2443,61 @@ namespace Content.Shared.CCVar
         /// </summary>
         public static readonly CVarDef<bool> DebugPow3rDisableParallel =
             CVarDef.Create("debug.pow3r_disable_parallel", true, CVar.SERVERONLY);
+
+        #region Surgery
+
+        public static readonly CVarDef<bool> CanOperateOnSelf =
+            CVarDef.Create("surgery.can_operate_on_self", true, CVar.SERVERONLY);
+
+        #endregion
+
+        #region Discord AHelp Reply System
+
+        /// <summary>
+        ///     If an admin replies to users from discord, should it use their discord role color? (if applicable)
+        ///     Overrides DiscordReplyColor and AdminBwoinkColor.
+        /// </summary>
+        public static readonly CVarDef<bool> UseDiscordRoleColor =
+            CVarDef.Create("admin.use_discord_role_color", true, CVar.SERVERONLY);
+
+        /// <summary>
+        ///     If an admin replies to users from discord, should it use their discord role name? (if applicable)
+        /// </summary>
+        public static readonly CVarDef<bool> UseDiscordRoleName =
+            CVarDef.Create("admin.use_discord_role_name", true, CVar.SERVERONLY);
+
+        /// <summary>
+        ///     The text before an admin's name when replying from discord to indicate they're speaking from discord.
+        /// </summary>
+        public static readonly CVarDef<string> DiscordReplyPrefix =
+            CVarDef.Create("admin.discord_reply_prefix", "(DISCORD) ", CVar.SERVERONLY);
+
+        /// <summary>
+        ///     The color of the names of admins. This is the fallback color for admins.
+        /// </summary>
+        public static readonly CVarDef<string> AdminBwoinkColor =
+            CVarDef.Create("admin.admin_bwoink_color", "red", CVar.SERVERONLY);
+
+        /// <summary>
+        ///     The color of the names of admins who reply from discord. Leave empty to disable.
+        ///     Overrides AdminBwoinkColor.
+        /// </summary>
+        public static readonly CVarDef<string> DiscordReplyColor =
+            CVarDef.Create("admin.discord_reply_color", string.Empty, CVar.SERVERONLY);
+
+        /// <summary>
+        ///     Use the admin's Admin OOC color in bwoinks.
+        ///     If either the ooc color or this is not set, uses the admin.admin_bwoink_color value.
+        /// </summary>
+        public static readonly CVarDef<bool> UseAdminOOCColorInBwoinks =
+            CVarDef.Create("admin.bwoink_use_admin_ooc_color", true, CVar.SERVERONLY);
+
+        #endregion
+
+        /// <summary>
+        ///     Goobstation: The amount of time between NPC Silicons draining their battery in seconds.
+        /// </summary>
+        public static readonly CVarDef<float> SiliconNpcUpdateTime =
+            CVarDef.Create("silicon.npcupdatetime", 1.5f, CVar.SERVERONLY);
     }
 }
