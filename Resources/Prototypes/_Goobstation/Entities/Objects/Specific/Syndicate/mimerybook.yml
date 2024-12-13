@@ -15,14 +15,16 @@
     learnPermanently: True
     spellActions:
       ActionMimeryWall: -1
+      ActionFingerGun: -1
 
 
 - type: entity
   name: Finger Gun
-  parent: [BaseWeaponBatterySmall, BaseCommandContraband] # Frontier: added BaseC2ContrabandUnredeemable. Goobstation: removed BaseC2ContrabandUnredeemable, added BaseCommandContraband
+  parent: [BaseWeaponBatterySmall, BaseSyndicateContraband] # Frontier: added BaseC2ContrabandUnredeemable. Goobstation: removed BaseC2ContrabandUnredeemable, added BaseCommandContraband
   id: FingerGun
   description: The peak of the Mime powers, only achieved by a secret method.
   components:
+  - type: Unremoveable
   - type: Sprite
     sprite: _Goobstation/Objects/Misc/mimery.rsi
     state: finger_gun

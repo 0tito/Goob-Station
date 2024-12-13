@@ -24,9 +24,14 @@ namespace Content.Server._Goobstation.MimeryBook
         public string WallPrototype = "WallInvisible";
 
         [DataField("MimeryWallAction", customTypeSerializer: typeof(PrototypeIdSerializer<EntityPrototype>))]
-        public string? MimeryWallAction = "ActionMimeryInvisibleWalls";
+        public string? MimeryWallAction = "ActionMimeryWall";
 
-        [DataField("MimeryWallActionEntity")] public EntityUid? MimeryeWallActionEntity;
+        [DataField("MimeryWallActionEntity")] public EntityUid? MimeryWallActionEntity;
+
+        [ViewVariables(VVAccess.ReadOnly)] public bool FingerGunActive = false;
+        [ViewVariables(VVAccess.ReadOnly)] public bool FingerGunExists = false;
+
+        public EntityUid FingerGun;
 
     }
 }

@@ -6,6 +6,7 @@ using Content.Shared.Magic;
 //using Content.Shared.Magic.Components;
 using Content.Shared.MimeryBook;
 using Content.Shared.Mind;
+using Content.Shared.Mindshield.Components;
 using Robust.Shared.Network;
 
 
@@ -46,6 +47,7 @@ public sealed class BookOfMimerySystem : EntitySystem
 
     private void OnUse(Entity<BookOfMimeryComponent> ent, ref UseInHandEvent args)
     {
+
         if (args.Handled)
             return;
 
@@ -83,7 +85,7 @@ public sealed class BookOfMimerySystem : EntitySystem
                     _actions.SetCharges(actionId, charges < 0 ? null : charges);
             }
         }
-
+        EnsureComp<MimeryPowersComponent>(args.Args.User);
         ent.Comp.SpellActions.Clear();
     }
 
