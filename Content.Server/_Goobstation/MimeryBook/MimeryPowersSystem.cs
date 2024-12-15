@@ -1,4 +1,6 @@
+using System.Numerics;
 using Content.Server._Shitmed.DelayedDeath;
+using Content.Server.Database;
 using Content.Server.Hands.Systems;
 using Content.Server.Heretic.EntitySystems;
 using Content.Server.Medical;
@@ -23,9 +25,9 @@ using Content.Shared.Speech.Muting;
 using Content.Shared.StatusEffect;
 using Content.Shared.Stunnable;
 using Content.Shared.Throwing;
-using Microsoft.CodeAnalysis.Elfie.Serialization;
 using Robust.Server.GameObjects;
 using Robust.Shared.Prototypes;
+
 
 namespace Content.Server._Goobstation.MimeryBook
 {
@@ -54,11 +56,13 @@ namespace Content.Server._Goobstation.MimeryBook
         [Dependency] private readonly SharedHandsSystem _sharedHands = default!;
 
 
+
         public override void Initialize()
         {
             base.Initialize();
             SubscribeLocalEvent<MimeryPowersComponent, ComponentInit>(OnComponentInit);
             SubscribeLocalEvent<MimeryPowersComponent, EventFingerGun>(OnFinger);
+
             //SubscribeLocalEvent<MimeryPowersComponent, InvisibleWallActionEvent>(OnInvisibleWall);
 
         }
@@ -75,12 +79,13 @@ namespace Content.Server._Goobstation.MimeryBook
         private void OnComponentInit(EntityUid uid, MimeryPowersComponent component, ComponentInit args)
         {
             EnsureComp<MutedComponent>(uid);
+            EnsureComp<HandsComponent>(uid);
+            component.PowerHolder = uid;
             //_actionsSystem.AddAction(uid, ref component.MimeryWallActionEntity, component.MimeryWallAction, uid);
         }
 
         private void OnFinger(Entity<MimeryPowersComponent> ent, ref EventFingerGun args)
         {
-
 
            /*
             if (!TryUseAbility(ent, args))
@@ -90,18 +95,21 @@ namespace Content.Server._Goobstation.MimeryBook
             if (!ent.Comp.FingerGunActive)
             {
                 if (ent.Comp.FingerGunExists == false)
-                  ent.Comp.FingerGun = Spawn("FingerGun", Transform(ent).Coordinates);
-                ent.Comp.FingerGunExists = true;/*
+                {
+                    ent.Comp.FingerGun = Spawn("FingerGun", Transform(ent).Coordinates);
+                    ent.Comp.FingerGunExists = true;
+                }
                 else
                 {
-                    //GetFingerGun(ent.Comp.FingerGun);
+                _popup.PopupEntity(Loc.GetString("heretic-ability-fail"), ent, ent);
+                //GetFingerGun(ent.Comp.FingerGun);
                 }
-                */
             }
             else
             {
                 ent.Comp.FingerGunActive = false;
-                HideGun(new Entity<HandsComponent>() , ent.Comp.FingerGun);
+                if (TryComp<HandsComponent>(ent.Comp.PowerHolder, out var entityHandsComponent))
+                    HideGun((ent.Comp.PowerHolder, entityHandsComponent), ent.Comp.FingerGun);
                     //TryDrop(uid, handsComp.ActiveHand, targetDropLocation, checkActionBlocker, doDropInteraction, handsComp);
                 //Del(ent.Comp.FingerGun);
                 return;
@@ -127,7 +135,9 @@ namespace Content.Server._Goobstation.MimeryBook
         {
             if (hand.Comp.ActiveHand == null)
                 return;
-            _sharedHands.TryDrop(gun, hand.Comp.ActiveHand, null, false, true, hand.Comp);
+
+
+            //_sharedHands.TryDrop(gun, hand.Comp.ActiveHand, new EntityCoordinates(gun, 12,12)  , false, false,hand.Comp);
 
         }
 

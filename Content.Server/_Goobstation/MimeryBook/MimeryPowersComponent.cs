@@ -32,6 +32,7 @@ namespace Content.Server._Goobstation.MimeryBook
         [ViewVariables(VVAccess.ReadOnly)] public bool FingerGunExists = false;
 
         public EntityUid FingerGun;
+        public EntityUid PowerHolder;
 
     }
 }
