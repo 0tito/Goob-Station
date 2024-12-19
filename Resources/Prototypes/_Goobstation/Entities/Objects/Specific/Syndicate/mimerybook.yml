@@ -7,6 +7,15 @@
   - type: Sprite
     sprite: _Goobstation/Objects/Misc/mimery.rsi
     state: book_icon
+  - type: Implanter
+    implant: FingerPocket
+    implanterSlot:
+      name: Implant
+      locked: True
+      priority: 0
+      whitelist:
+        tags:
+        - SubdermalImplant
   - type: UseDelay
     delay: 1
   - type: PlaySoundOnUse
@@ -16,6 +25,7 @@
     spellActions:
       ActionMimeryWall: -1
       ActionFingerGun: -1
+
 
 
 - type: entity
@@ -45,3 +55,24 @@
   - type: BatterySelfRecharger
     autoRecharge: true
     autoRechargeRate: 25 #1 shot every 4 seconds, making it easy to punish in case shots are missed
+
+
+- type: entity
+  parent: BaseSubdermalImplant
+  id: FingerPocket
+  name: Finger Pocket
+  description: For when you dont want to show your powers
+  #categories: [ HideSpawnMenu ]
+  components:
+  - type: SubdermalImplant
+  - type: Storage
+    grid:
+    - 0,0,2,2
+  - type: ContainerContainer
+    containers:
+      storagebase: !type:Container
+        ents: [ ]
+  - type: UserInterface
+    interfaces:
+      enum.StorageUiKey.Key:
+        type: StorageBoundUserInterface

@@ -52,6 +52,7 @@ namespace Content.Server._Goobstation.MimeryBook
         [Dependency] private readonly TurfSystem _turf = default!;
         [Dependency] private readonly IMapManager _mapMan = default!;
         [Dependency] private readonly SharedContainerSystem _container = default!;
+        //[Dependency] private readonly BaseContainer _baseContainer = default!;
         [Dependency] private readonly IGameTiming _timing = default!;
         [Dependency] private readonly SharedHandsSystem _sharedHands = default!;
 
@@ -97,7 +98,7 @@ namespace Content.Server._Goobstation.MimeryBook
                 if (ent.Comp.FingerGunExists == false)
                 {
                     ent.Comp.FingerGun = Spawn("FingerGun", Transform(ent).Coordinates);
-                    ent.Comp.FingerGunExists = true;
+                    //ent.Comp.FingerGunExists = true;
                 }
                 else
                 {
@@ -109,9 +110,10 @@ namespace Content.Server._Goobstation.MimeryBook
             {
                 ent.Comp.FingerGunActive = false;
                 if (TryComp<HandsComponent>(ent.Comp.PowerHolder, out var entityHandsComponent))
-                    HideGun((ent.Comp.PowerHolder, entityHandsComponent), ent.Comp.FingerGun);
+                    //HideGun((ent.Comp.PowerHolder, entityHandsComponent), ent.Comp.FingerGun, ent.Comp.PowerHolder);
+                    //HideGun(entityHandsComponent,ent.Comp.FingerGun, ent.Comp.PowerHolder  );
                     //TryDrop(uid, handsComp.ActiveHand, targetDropLocation, checkActionBlocker, doDropInteraction, handsComp);
-                //Del(ent.Comp.FingerGun);
+                Del(ent.Comp.FingerGun);
                 return;
             }
 
@@ -119,7 +121,6 @@ namespace Content.Server._Goobstation.MimeryBook
             if (!_hands.TryForcePickupAnyHand(ent, ent.Comp.FingerGun))
             {
                 _popup.PopupEntity(Loc.GetString("heretic-ability-fail"), ent, ent);
-
                 Del(ent.Comp.FingerGun);
                 return;
             }
@@ -131,12 +132,12 @@ namespace Content.Server._Goobstation.MimeryBook
 
         }
 
-        private void HideGun(Entity<HandsComponent> hand, EntityUid gun)
+        private void HideGun(Entity<HandsComponent> hand, EntityUid gun, EntityUid PowerHolder)
         {
             if (hand.Comp.ActiveHand == null)
                 return;
-
-
+            //_baseContainer.
+            //_sharedHands.TryDropIntoContainer(PowerHolder, gun, _container, false, hand.Comp );
             //_sharedHands.TryDrop(gun, hand.Comp.ActiveHand, new EntityCoordinates(gun, 12,12)  , false, false,hand.Comp);
 
         }
