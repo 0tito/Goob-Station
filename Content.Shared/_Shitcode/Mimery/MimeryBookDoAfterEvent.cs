@@ -1,0 +1,11 @@
+using Content.Shared.DoAfter;
+using Robust.Shared.Serialization;
+
+namespace Content.Server._Shitcode.Mimery;
+
+[Serializable, NetSerializable]
+
+public sealed partial class MimeryBookDoAfterEvent : SimpleDoAfterEvent
+{
+
+}
