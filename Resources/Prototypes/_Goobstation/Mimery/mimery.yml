@@ -10,8 +10,7 @@
   - type: UseDelay
     delay: 1
   - type: MimeryBook
-    learnPermanently: True
-    spellActions:
-      ActionMimeryWall: -1
-      ActionFingerGun: -1
-
+    #learnPermanently: True
+    #spellActions:
+      #ActionMimeryWall: -1
+      #ActionFingerGun: -1

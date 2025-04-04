@@ -1,0 +1,23 @@
+- type: entity
+  id: ActionFingerGun
+  name: Finger Gun
+  description: The peak of the mime powers.
+  components:
+  - type: InstantAction
+    useDelay: 3
+    itemIconStyle: BigAction
+    icon:
+      sprite: _Goobstation/Objects/Misc/mimery.rsi
+      state: finger_gun
+    event: !type:FingerGunEvent
+
+
+- type: entity
+  id: FingerGun
+  name: Finger Gun
+  parent: BaseItem
+  description: A gun gesture, theres no way this could be harmful right?
+  components:
+    - type: Sprite
+      sprite: _Goobstation/Objects/Misc/mimery.rsi
+      state: finger_gun
