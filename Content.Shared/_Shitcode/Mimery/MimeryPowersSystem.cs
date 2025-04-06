@@ -28,7 +28,7 @@ public sealed class MimeryPowersSystem : EntitySystem
     {
         _actions.AddAction(ent, "ActionMimeryWall");
         //_actions.AddAction(ent, "ActionFingerGun");
-        EnsureComp<FingerGunComponent>(ent);
+        RaiseLocalEvent(new AddFingerGunComponentEvent(ent));
         EnsureComp<MutedComponent>(ent);
     }
 }
